@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        canvas {
+            background-color: aliceblue;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width="500" height="500">
+    </canvas>
+
+    <script>
+       const cvs=document.querySelector('canvas') 
+       const con=cvs.getContext('2d')
+
+       const rectSize = [100, 100];
+       con.fillStyle='#000'
+       con.beginPath()
+    //    con.translate(-0.5*rectSize[0],-0.5*rectSize[1])
+    //    con.rect(0.5*cvs.width,0.5*cvs.height,...rectSize)
+    con.lineWidth=10
+    con.beginPath();
+       con.moveTo(0.5*cvs.width, 0.5*cvs.height);
+       con.lineTo(0.8*cvs.width,0.5*cvs.height)
+       con.lineTo(0.65*cvs.width,0.8*cvs.height)
+       con.closePath();
+        con.stroke()
+
+        con.beginPath();
+       con.fillStyle='yellow'
+       con.ellipse(0.5*cvs.width, 0.5*cvs.height, 75, 50, 0, 0, 2 * Math.PI); //倾斜45°角
+       con.fill();
+       
+       //todo 五角星
+
+    </script>   
+</body>
+
+</html>
