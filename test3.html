@@ -18,8 +18,11 @@
 <body>
 
     <h1 id="title"></h1>
+    <img src="" alt="" srcset="">
     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="800" height="800" viewBox="0 0 1600 1600">
     </svg>
+    <canvas></canvas>
+
     <script src="https://cdn.jsdelivr.net/npm/d3-hierarchy@3"></script>
     <script>
         const dataSource = 'https://s5.ssl.qhres2.com/static/b0695e2dd30daa64.json'
@@ -36,24 +39,57 @@
                 console.log(root);
 
                 // const s = document.createElement('svg')
-                const s = $('svg')
+                let s = $('svg')
                 draw(s, root)
-                // document.body.insertBefore(s, document.querySelector('script'))
+                console.dir(s)
 
-                function draw(parent, root, { fillStyle = 'rgba(0, 0, 0, 0.2)', textColor = 'white' } = {}) {
+                var canvas =$('canvas')
+                canvas.width='800'
+                canvas.height='800'
+                var ctx = canvas.getContext("2d");
+
+
+                //cvs
+                var img = new Image();
+                const range=new Range();
+                range.selectNode(s)
+                const fr=range.extractContents()
+                img.src = 'data:image/svg+xml;utf-8,'+fr.firstChild.outerHTML
+                img.onload = function () {
+                    var pattern = ctx.createPattern(img, 'repeat');
+                    ctx.fillStyle = pattern;
+                    ctx.fillRect(0,0,800,800);
+                };
+
+
+                // // img+svg
+                // {
+                // const range=new Range();
+                // range.selectNode(s)
+                // const fr=range.extractContents()
+                // console.dir(fr);
+                // $('img').src='data:image/svg+xml;utf-8,'+fr.firstChild.outerHTML
+                // }
+
+                
+
+
+
+                function draw(parent, root, preCity = '', { fillStyle = 'rgba(0, 0, 0, 0.2)', textColor = 'white' } = {}) {
                     const children = root.children
-                    const { x, y, r } = root
+                    const { x, y, r, data } = root
                     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
                     circle.setAttribute('cx', x);
                     circle.setAttribute('cy', y);
                     circle.setAttribute('r', r);
                     circle.setAttribute('fill', fillStyle);
+                    circle.setAttribute('data-city', `${preCity ? preCity + '-' : ''}${data.name}`);
                     parent.appendChild(circle)
 
                     if (children) {
                         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
                         for (const child of children) {
-                            draw(g, child)
+                            draw(g, child, data.name)
                         }
                         parent.appendChild(g)
                     }
@@ -72,9 +108,26 @@
 
                 }
 
-                // s.addEventListener('mousemove',e=>{
-                //     let target=e.target;
-                // }
+                let currSel = null
+
+                s.addEventListener('mousemove', e => {
+                    let target = e.target;
+                    if (target.tagName !== 'g') {
+                        if (target.tagName === 'text') {
+                            target = target.previousSibling
+                        }
+                        // console.log(target);
+                        if (target) {
+                            if (currSel) {
+                                currSel.setAttribute('fill', 'rgba(0, 0, 0, 0.2)')
+                            }
+                            target.setAttribute('fill', 'rgba(0, 128, 0, 0.5)')
+                            $('#title').textContent = target.dataset.city
+                            currSel = target
+
+                        }
+                    }
+                })
 
             })()
     </script>
