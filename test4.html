@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas></canvas>
+
+    <script>
+        // 步骤一：创建 WebGL 上下文
+        const canvas = document.querySelector('canvas');
+        const gl = canvas.getContext('webgl');
+
+        // 步骤二：创建 WebGL 程序
+
+        // 创建shader，shader由GLSL编写
+        const vertex = `
+        attribute vec2 position;
+        varying vec3 color;
+
+        void main() {
+          gl_PointSize = 1.0;
+          color = vec3(0.5 + position * 0.5, 0.0);
+          gl_Position = vec4(position , 1.0, 1.0);
+        }
+        `;
+
+
+
+        const fragment = `
+          precision mediump float;
+          varying vec3 color;
+          
+          void main()
+          {
+            gl_FragColor = vec4(color, 1.0);
+          }    
+        `;
+
+
+
+        // 创建shader对象，js中要创建对象
+
+        const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+        gl.shaderSource(vertexShader, vertex);
+        gl.compileShader(vertexShader);
+
+
+        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+        gl.shaderSource(fragmentShader, fragment);
+        gl.compileShader(fragmentShader);
+
+
+        // 创建WebGLProgram，WebGLProgram是Gpu最终运行shader的程序
+        const program = gl.createProgram();
+        //vertex和fragment放到WebGLProgram中
+        gl.attachShader(program, vertexShader);
+        gl.attachShader(program, fragmentShader);
+        // WebGLProgram对象链接到webGL上下文对象中
+        gl.linkProgram(program);
+
+
+        gl.useProgram(program);
+
+        // 步骤三：将数据存入缓冲区
+        const points = new Float32Array([-1, 0,
+            0, -1,
+            1, 0,
+            0, 1,
+        ]);
+
+
+        const bufferId = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+        gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+
+        //获取顶点着色器中的position变量的地址
+        const vPosition = gl.getAttribLocation(program, 'position');
+        // 给变量设置长度和类型
+        gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+        // 激活这个变量
+        gl.enableVertexAttribArray(vPosition);
+
+        // 清除画布内容
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        // drawArrays(绘制的基本图形,偏移量，顶点数量)
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, points.length / 2);
+    </script>
+</body>
+
+</html>
