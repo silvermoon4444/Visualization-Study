@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      canvas {
+        background-color: aliceblue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="512" height="512"></canvas>
+
+    <script type="module">
+      import { Vector2D } from "../js/vc2.js";
+      import { drFill } from "./draw.js";
+
+      const ctx = document.querySelector("canvas").getContext("2d");
+
+      //构建正五边形
+      {
+        let po = new Vector2D(0, 200);
+        const poMul = [po];
+        for (let i = 1; i < 5; i++) {
+          let p = poMul[0].copy().rotate(Math.PI * 0.4 * i);
+          poMul.push(p);
+        }
+        const w = document.querySelector("canvas").height;
+        const h = document.querySelector("canvas").height;
+
+        ctx.save();
+
+        ctx.translate(w * 0.5, h * 0.5);
+        ctx.rotate(0.5 * Math.PI * 0.4);
+        drFill(poMul, ctx, { close });
+
+        ctx.restore();
+      }
+
+      //构建正五角星
+      {
+        let po = new Vector2D(0, 200);
+        const poMul = [po];
+        for (let i = 1; i < 5; i++) {
+          let p = poMul[0].copy().rotate(Math.PI * 0.4 * i);
+          poMul.push(p);
+        }
+
+        const pp = [poMul[0], poMul[2], poMul[4], poMul[1], poMul[3]];
+        const w = document.querySelector("canvas").height;
+        const h = document.querySelector("canvas").height;
+
+        ctx.save();
+
+        ctx.translate(w * 0.5, h * 0.5);
+        ctx.rotate(0.5 * Math.PI * 0.4);
+
+        drFill(pp, ctx, { fillStyle: "yellow",rule:'evenodd', close });
+
+        // ctx.restore();
+      }
+    </script>
+  </body>
+</html>

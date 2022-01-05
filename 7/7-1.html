@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      canvas {
+        background-color: aliceblue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="512" height="512"></canvas>
+    <!-- <script src=" https://unpkg.com/roughjs@latest/bundled/rough.js"></script> -->
+    <script type="module">
+      import { Vector2D } from "./vc2.js";
+
+      //正多边形 edges几条边 step边长
+      function regularShape(x, y, edges = 3, step) {
+        const rs = [];
+        // 第一个点
+        let start = new Vector2D(x, y);
+        // 计算需要旋转的角度
+        const delta = Math.PI * (1 - (edges - 2) / edges);//????
+        console.log("delta", delta);
+        rs.push(start);
+        // 第二个点坐标
+        const two = new Vector2D(step, 0);
+        for (let i = 0; i < edges; i++) {
+          start = start.copy().add(two.rotate(delta));
+          rs.push(start);
+        }
+        return rs;
+      }
+
+      function draw(points, strokeStyle = "black", fillStyle = null) {
+        ctx.strokeStyle = strokeStyle;
+        ctx.beginPath();
+        ctx.moveTo(...points[0]);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(...points[i]);
+        }
+        ctx.closePath();
+        if (fillStyle) {
+          ctx.fillStyle = fillStyle;
+          ctx.fill();
+        }
+        ctx.stroke();
+      }
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+      const { width, height } = canvas;
+      ctx.translate(150, 50);
+      //   ctx.scale(1, -1);
+     
+      console.log('test', new Vector2D(-100,50).rotate(2.0943951023931957));
+
+      draw(regularShape(0, 0, 3, 150));
+    //   draw(regularShape(150, 0, 6, 50));
+    //   draw(regularShape(5, 150, 60, 15));
+    </script>
+  </body>
+</html>
