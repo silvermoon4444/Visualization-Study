@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      canvas {
+        background-color: aliceblue;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas width="512" height="512"></canvas>
+    <script src="./earcut.min.js"></script>
+
+    <script type="module">
+      import { drFill as draw } from "./draw.js";
+      const vertices = [
+        [-0.7, 0.5],
+        [-0.4, 0.3],
+        [-0.25, 0.71],
+        [-0.1, 0.56],
+        [-0.1, 0.13],
+        [0.4, 0.21],
+        [0, -0.6],
+        [-0.3, -0.3],
+        [-0.6, -0.3],
+        [-0.45, 0.0],
+      ];
+
+      const canvas = document.querySelector("canvas");
+      const ctx = canvas.getContext("2d");
+      const { width, height } = canvas;
+      ctx.translate(0.5 * width, 0.5 * height);
+      ctx.scale(1, -1);
+
+      //默认webgl的canvas边界为1，所以512的宽要容纳有0.7的x坐标需要将256换算成1，故x,y放大256
+      const poitions = vertices.map(([x, y]) => [x * 256, y * 256]);
+
+      // function draw(ctx, points, strokeStyle = "black", fillStyle = null) {
+      //   ctx.strokeStyle = strokeStyle;
+      //   ctx.beginPath();
+      //   ctx.moveTo(...points[0]);
+      //   for (let i = 1; i < points.length; i++) {
+      //     ctx.lineTo(...points[i]);
+      //   }
+      //   ctx.closePath();
+      //   if (fillStyle) {
+      //     ctx.fillStyle = fillStyle;
+      //     ctx.fill();
+      //   }
+      //   ctx.stroke();
+      // }
+
+      function isPointInPath(ctx, x, y) {
+        const cn=ctx.canvas.cloneNode()
+        console.log(cn);
+        const cloned = cn.getContext("2d");
+        cloned.translate(0.5 * width, 0.5 * height);
+        cloned.scale(1, -1);
+        let ret = false;
+        draw(poitions, cloned, {
+          strokeStyle: "transparent",
+          fillStyle: "red",
+        });
+        ret |= cloned.isPointInPath(x, y);
+        if (!ret) {
+          draw(
+            [
+              [100, 100],
+              [100, 200],
+              [150, 200],
+            ],
+            cloned,
+            { strokeStyle: "transparent", fillStyle: "blue" }
+          );
+          ret |= cloned.isPointInPath(x, y);
+        }
+        return ret;
+      }
+
+      draw(
+        [
+          [100, 100],
+          [100, 200],
+          [150, 200],
+        ],
+        ctx,
+        { strokeStyle: "transparent", fillStyle: "blue" }
+      );
+      draw(poitions, ctx, { strokeStyle: "transparent", fillStyle: "red" });
+
+      const { left, top } = canvas.getBoundingClientRect();
+
+      canvas.addEventListener("mousemove", (evt) => {
+        const { x, y } = evt;
+        // 坐标转换
+        const offsetX = x - left;
+        const offsetY = y - top;
+
+        ctx.clearRect(-256, -256, 512, 512);
+
+        if (ctx.isPointInPath(offsetX,offsetY)) {
+          draw(poitions, ctx, {
+            strokeStyle: "transparent",
+            fillStyle: "green",
+          });
+          draw(
+            [
+              [100, 100],
+              [100, 200],
+              [150, 200],
+            ],
+            ctx,
+            {
+              strokeStyle: "transparent",
+              fillStyle: "orange",
+            }
+          );
+        } else {
+          draw(poitions, ctx, {
+            strokeStyle: "transparent",
+            fillStyle: "red",
+          });
+          draw(
+            [
+              [100, 100],
+              [100, 200],
+              [150, 200],
+            ],
+            ctx,
+            {
+              strokeStyle: "transparent",
+              fillStyle: "blue",
+            }
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

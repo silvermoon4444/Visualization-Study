@@ -1,4 +1,4 @@
-import { Vector2D } from './vc2.js';
+import { Vector2D } from './js/vc2.js';
 
 
 // const rc = rough.canvas(document.querySelector('canvas'));
