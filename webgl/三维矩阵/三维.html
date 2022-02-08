@@ -1,35 +1,42 @@
-<link rel="stylesheet" href="./css/F.css">
-
+<link rel="stylesheet" href="../css/F.css">
 <canvas id="canvas"></canvas>
-<canvas></canvas>
 <div id="uiContainer">
   <div id="ui">
     <div id="x"></div>
     <div id="y"></div>
-    <div id="angle"></div>
+    <div id="z"></div>
+    <div id="angleX"></div>
+    <div id="angleY"></div>
+    <div id="angleZ"></div>
     <div id="scaleX"></div>
     <div id="scaleY"></div>
+    <div id="scaleZ"></div>
   </div>
 </div>
 <!-- vertex shader -->
-<script  id="vertex-shader-2d" type="x-shader/x-vertex">
-attribute vec2 a_position;
+<script  id="vertex-shader-3d" type="x-shader/x-vertex">
+attribute vec4 a_position;
+attribute vec4 a_color;
 
-uniform mat3 u_matrix;
+uniform mat4 u_matrix;
+varying vec4 v_color;
 
 void main() {
   // Multiply the position by the matrix.
-  gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);
+  gl_Position = u_matrix * a_position;
+
+  // 将颜色传递给片断着色器
+  v_color = a_color;
 }
 </script>
 <!-- fragment shader -->
-<script  id="fragment-shader-2d" type="x-shader/x-fragment">
+<script  id="fragment-shader-3d" type="x-shader/x-fragment">
 precision mediump float;
 
-uniform vec4 u_color;
+varying vec4 v_color;
 
 void main() {
-   gl_FragColor = u_color;
+   gl_FragColor = v_color;
 }
 </script><!--
 for most samples webgl-utils only provides shader compiling/linking and
@@ -40,4 +47,4 @@ for webgl-utils, m3, m4, and webgl-lessons-ui.
 -->
 <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
 <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js"></script>
-<script src="./js/F2.js"></script>
+<script src="./f.js"></script>
